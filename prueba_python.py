@@ -17,7 +17,6 @@ def extraer_lineas_archivo() ->list:
     try:
         with open(nombre_archivo, "r") as archivo_csv:
             leyendo_archivo = csv.reader(archivo_csv, delimiter=",")
-            #next(leyendo_archivo)
 
             for linea in leyendo_archivo:
                 lineas_archivo_csv.append(linea)
@@ -31,12 +30,12 @@ def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
     #PRE:Recibimos las lineas del archivo modificadas como listas de listas.
     #POST:Se retorna un None debido al ser un procedimiento.
 
-    with open("Archivo_modificado.csv", "w", newline='') as archivo_nuevo:
+    with open("Archivo_modificado.tsv", "a", newline='') as archivo_nuevo:
 
-        escribir = csv.writer(archivo_nuevo, delimiter=",")
+        escribir = csv.writer(archivo_nuevo, delimiter="\t")
         
-        for a,b,c,d,e,f,g,h,i in lineas_archivo_csv_modificado:
-            escribir.writerow((a,b,c,d,e,f,g,h,i))
+        for a,b,c,d,e,f,g,h,i,l in lineas_archivo_csv_modificado:
+            escribir.writerow((a,b,c,d,e,f,g,h,i,l))
 
 
 def cambiando_pt(lineas_archivo_csv:list, ptime:str) -> None:
@@ -120,7 +119,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
             pt_time_nuevo = input("Estas introduciendo un valor invalido, marca nuevamente el PT deseado ")
 
         for id_linea in range(len(lineas_archivos_csv)):
-            if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual and lineas_archivos_csv[id_linea][4] == "monday":
+            if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual:
                 lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
      
                 if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
@@ -129,14 +128,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
     #agregar la posibilidad de modificar etds, para modificar ambas o uno solo
 
         impacto_pt = agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, cpt_actual)
-        
-        with open("Archivo_modificado.tsv", "a", newline='') as archivo_nuevo:
-
-            escribir = csv.writer(archivo_nuevo, delimiter="\t")
-        
-            for a,b,c,d,e,f,g,h,i,l in impacto_pt:
-                escribir.writerow((a,b,c,d,e,f,g,h,i,l))
-        print(canalizaciones_pt_actualizados)
+        escribiendo_archivo_modificado(impacto_pt)
         canalizaciones_pt_actualizados.clear()
         seguir = int(input("1 para continuar cambiando PT a otros cpts, 2 para salir "))
 

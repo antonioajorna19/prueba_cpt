@@ -4,7 +4,7 @@ PROCESING_TIME = 7
 TYPE = 5
 CPT = 6
 FROM_CANALIZACION_SERVICEID = 0
-
+DAY = 4
 
 def extraer_lineas_archivo() ->list:
 
@@ -114,16 +114,24 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
         
         cpt_actual = input("Introduce el cpt al que quieres cambiar el PT. ej: 0200 ")
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
+        cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
+        if cambiar_dias_en_particular == 1:
+            dia_en_particular = input("Escribe el dia en particular. ej:monday ")
 
         while len(pt_time_nuevo) != 4 :
             pt_time_nuevo = input("Estas introduciendo un valor invalido, marca nuevamente el PT deseado ")
 
         for id_linea in range(len(lineas_archivos_csv)):
-            if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual:
-                lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
-     
-                if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
-                    canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
+            if cambiar_dias_en_particular == 1:
+                if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual and lineas_archivos_csv[id_linea][DAY] == dia_en_particular:
+                    lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
+                    if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
+                        canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
+            else:
+                if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual:
+                    lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
+                    if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
+                        canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
     #agregar la posibilidad de modificar etds, para modificar ambas o uno solo
 

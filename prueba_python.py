@@ -5,6 +5,8 @@ TYPE = 5
 CPT = 6
 FROM_CANALIZACION_SERVICEID = 0
 DAY = 4
+POSICION_DE_SOBRA = 9
+
 
 def extraer_lineas_archivo() ->list:
 
@@ -25,14 +27,16 @@ def extraer_lineas_archivo() ->list:
     
     return lineas_archivo_csv
 
-def validando_campos_de_lineas(lineas_archiv_csv:list):
+def validando_campos_de_lineas(lineas_archiv_csv:list) ->None:
 
-    print(lineas_archiv_csv)
+    #Pre: Recibimos la lista con las lineas del archivo csv.
+    #POST:No se retorna nada debido a ser un procedimiento.
+    '''Lo que hace esta funcion es quitar los espacios que estan de mas en base a la planilla.'''
+
     for id_linea in range(len(lineas_archiv_csv)):
-        
         if len(lineas_archiv_csv[id_linea]) > 8:
-            lineas_archiv_csv[id_linea].pop(9)
-            print(lineas_archiv_csv)
+            lineas_archiv_csv[id_linea].pop(POSICION_DE_SOBRA)
+
 
 def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
 

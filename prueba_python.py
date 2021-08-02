@@ -17,13 +17,22 @@ def extraer_lineas_archivo() ->list:
     try:
         with open(nombre_archivo, "r") as archivo_csv:
             leyendo_archivo = csv.reader(archivo_csv, delimiter=",")
-
             for linea in leyendo_archivo:
                 lineas_archivo_csv.append(linea)
+    
     except FileNotFoundError:
         print("El archivo descrito no existe en esta ruta, marque 1 para volver a intentar")
+    
     return lineas_archivo_csv
 
+def validando_campos_de_lineas(lineas_archiv_csv:list):
+
+    print(lineas_archiv_csv)
+    for id_linea in range(len(lineas_archiv_csv)):
+        
+        if len(lineas_archiv_csv[id_linea]) > 8:
+            lineas_archiv_csv[id_linea].pop(9)
+            print(lineas_archiv_csv)
 
 def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
 
@@ -31,11 +40,9 @@ def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
     #POST:Se retorna un None debido al ser un procedimiento.
 
     with open("Archivo_modificado.tsv", "a", newline='') as archivo_nuevo:
-
         escribir = csv.writer(archivo_nuevo, delimiter="\t")
-        
-        for a,b,c,d,e,f,g,h,i,l in lineas_archivo_csv_modificado:
-            escribir.writerow((a,b,c,d,e,f,g,h,i,l))
+        for a,b,c,d,e,f,g,h,i in lineas_archivo_csv_modificado:
+            escribir.writerow((a,b,c,d,e,f,g,h,i))
 
 
 def cambiando_pt(lineas_archivo_csv:list, ptime:str) -> None:
@@ -109,9 +116,9 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
     #POST: Se retorna en una lista el from_canalizacion_serviceid de los cpts afectados por el cambio de PT.
 
     canalizaciones_pt_actualizados = list()
+
     decision = True
     while decision:
-        
         cpt_actual = input("Introduce el cpt al que quieres cambiar el PT. ej: 0200 ")
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
         cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
@@ -146,7 +153,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
             decision = False
   
 
-def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, cpt_actual:str):
+def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, cpt_actual:str) ->list:
 
     #PRE:Recibimos las canalizaciones afectadas y las lineas del archivo csv descargado como listas.
     #POST:Retornamos como lista todos los cpts modificados con sus etds.
@@ -168,6 +175,7 @@ def main():
         decision = menu()
         if decision != None:
             lineas_archivo_csv = extraer_lineas_archivo()
+            validando_campos_de_lineas(lineas_archivo_csv)
 
             if len(lineas_archivo_csv) != 0:
 

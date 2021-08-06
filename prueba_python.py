@@ -128,7 +128,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
         cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
         if cambiar_dias_en_particular == 1:
-            dia_en_particular = input("Escribe los dias en particular que deseas cambiar separados por espacios. ej:monday wednesday")
+            dia_en_particular = input("Escribe los dias en particular que deseas cambiar separados por espacios. ej:monday wednesday ")
             dias_a_modificar = dia_en_particular.split()
 
         while len(pt_time_nuevo) != 4 :
@@ -146,7 +146,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
                     lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
                     if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
                         canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
-    #agregar que los dias se introduzcan por espacios
+
     #agregar la posibilidad de modificar etds, para modificar ambas o uno solo
 
         agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
@@ -164,7 +164,6 @@ def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, impa
 
     #PRE:Recibimos las canalizaciones afectadas y las lineas del archivo csv descargado como listas.
     #POST:Retornamos como lista todos los cpts modificados con sus etds.
-
 
     for canalizacion_serviceid in canalizaciones_afectadas:
         for id_de_linea in range(len(lineas_archivos_csv)):

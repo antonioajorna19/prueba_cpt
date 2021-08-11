@@ -6,7 +6,7 @@ CPT = 6
 FROM_CANALIZACION_SERVICEID = 0
 DAY = 4
 POSICION_DE_SOBRA = 9
-
+ETD = 6
 
 def extraer_lineas_archivo() ->list:
 
@@ -115,6 +115,33 @@ def cambiar_horarios_cpts(lineas_archivos_csv:list) -> None:
     return lineas_archivos_csv
 
 
+def cambiar_pt_a_etd(impacto_pt_final:list)->None:
+
+    #PRE:Recibimos la kista con las canalizaciones a impactar.
+    #POST:Al ser un procedimiento, se retorna un valor de tipo None.
+
+    valor_etd = input("Introduce por favor el el valor del etd a cambiar el valor. Ej: 0800 ")
+    valor_pt = input("Introduce por favor el valor el PT a cambiar ")
+    cambiar_dias = int(input("Marque 1 si desea cambiarlo a dias en particular o 2 para todos "))
+
+    if cambiar_dias ==1:
+        dias_a_cambiar = input("Por favor ingrese los dias separados por espacios a cambiar ")
+        dias_en_particular = dias_a_cambiar.split()
+    
+
+    for id_linea in range(len(impacto_pt_final)):
+        if cambiar_dias == 1:
+            for dia in dias_en_particular:
+                if impacto_pt_final[id_linea][TYPE]=="etd" and impacto_pt_final[id_linea][ETD]==valor_etd and impacto_pt_final[id_linea][DAY]==dia:
+                    impacto_pt_final[id_linea][PROCESING_TIME]=valor_pt
+        else:
+            if impacto_pt_final[id_linea][TYPE]=="etd" and impacto_pt_final[id_linea][ETD]==valor_etd:
+                impacto_pt_final[id_linea][PROCESING_TIME]=valor_pt
+
+    
+    print("Cambio agregado!")
+
+
 def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
 
     #PRE: Se reciben las lineas del archivo.csv a modificar.
@@ -147,9 +174,11 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
                     if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
                         canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
-    #agregar la posibilidad de modificar etds, para modificar ambas o uno solo
-
         agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
+        decision_cambiar_pt_a_etd = int(input("Marca 1 si deseas cambiar el pt a los etds o 2 para salir "))
+        if decision_cambiar_pt_a_etd == 1:
+            cambiar_pt_a_etd(impacto_pt_final)
+
         canalizaciones_pt_actualizados.clear()
         seguir = int(input("1 para continuar cambiando PT a otros cpts, 2 para salir "))
 

@@ -1,5 +1,6 @@
 import csv
 
+
 PROCESING_TIME = 7
 TYPE = 5
 CPT = 6
@@ -7,6 +8,7 @@ FROM_CANALIZACION_SERVICEID = 0
 DAY = 4
 POSICION_DE_SOBRA = 9
 ETD = 6
+
 
 def extraer_lineas_archivo() ->list:
 
@@ -46,8 +48,8 @@ def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
 
     with open("Archivo_modificado.tsv", "a", newline='') as archivo_nuevo:
         escribir = csv.writer(archivo_nuevo, delimiter="\t")
-        for a,b,c,d,e,f,g,h,i in lineas_archivo_csv_modificado:
-            escribir.writerow((a,b,c,d,e,f,g,h,i))
+        for key,warehouse,canalizacion,servicio,dia,tipo,hora,pt,tt in lineas_archivo_csv_modificado:
+            escribir.writerow((key,warehouse,canalizacion,servicio,dia,tipo,hora,pt,tt))
 
 
 def cambiando_pt(lineas_archivo_csv:list, ptime:str) -> None:
@@ -67,12 +69,12 @@ def validando_decision(decision:int) ->int:
     #PRE: Recibimos la decision del usuario como entero.
     #POST: Retornamos como entero la decision del usuario validada.
 
-    error_decision = True
-    while error_decision:
+    error_decision = False
+    while not error_decision:
         if decision < 1 or decision > 3:
             decision = int(input("Estas introduciendo un numero fuera de rango, intenta nuevamente "))
         else:
-            error_decision = False
+            error_decision = True
 
     return decision
 
@@ -90,8 +92,8 @@ def menu() -> int:
         print(f"{opcion+1}){procedimientos[opcion]}")
 
     try:
-        decision = int(input("Introduce por favor la decision deseada "))
-        decision_validada = validando_decision(decision)
+        decision_a_validar = int(input("Introduce por favor la decision deseada "))
+        decision = validando_decision(decision_a_validar)
 
     except ValueError:
         print("Estas introduciendo un tipo de valor no numerico, marque 1 para reintentar nuevamente. ")
@@ -112,8 +114,6 @@ def cambiar_horarios_cpts(lineas_archivos_csv:list) -> None:
         if lineas_archivos_csv[id_linea][TYPE] == "cpt":
             lineas_archivos_csv[id_linea][CPT] = cpt_modificado
 
-    return lineas_archivos_csv
-
 
 def cambiar_pt_a_etd(impacto_pt_final:list)->None:
 
@@ -125,10 +125,9 @@ def cambiar_pt_a_etd(impacto_pt_final:list)->None:
     cambiar_dias = int(input("Marque 1 si desea cambiarlo a dias en particular o 2 para todos "))
 
     if cambiar_dias ==1:
-        dias_a_cambiar = input("Por favor ingrese los dias separados por espacios a cambiar ")
+        dias_a_cambiar = input("Por favor ingrese los dias a cambiar separados por espacios ")
         dias_en_particular = dias_a_cambiar.split()
     
-
     for id_linea in range(len(impacto_pt_final)):
         if cambiar_dias == 1:
             for dia in dias_en_particular:
@@ -138,7 +137,6 @@ def cambiar_pt_a_etd(impacto_pt_final:list)->None:
             if impacto_pt_final[id_linea][TYPE]=="etd" and impacto_pt_final[id_linea][ETD]==valor_etd:
                 impacto_pt_final[id_linea][PROCESING_TIME]=valor_pt
 
-    
     print("Cambio agregado!")
 
 
@@ -203,8 +201,9 @@ def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, impa
 def main():
 
      
-    continuar = True
-    while continuar:
+    continuar = False
+    while not continuar:
+
         decision = menu()
         if decision != None:
             lineas_archivo_csv = extraer_lineas_archivo()
@@ -229,7 +228,7 @@ def main():
         if continuar_decision == 1:
             print("\nSigamos")#deberia ir la funcion de limpiar pantalla
         else:
-            continuar = False
+            continuar = True
 
     print("Chao")
 

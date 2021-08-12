@@ -144,11 +144,12 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
 
     #PRE: Se reciben las lineas del archivo.csv a modificar.
     #POST: Se retorna en una lista el from_canalizacion_serviceid de los cpts afectados por el cambio de PT.
+
     impacto_pt_final = list()
     canalizaciones_pt_actualizados = list()
 
-    decision = True
-    while decision:
+    decision = False
+    while not decision:
         cpt_actual = input("Introduce el cpt al que quieres cambiar el PT. ej: 0200 ")
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
         cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
@@ -183,7 +184,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
         if seguir == 1:
             print("Sigamos")
         else:
-            decision = False
+            decision = True
             escribiendo_archivo_modificado(impacto_pt_final)
   
 

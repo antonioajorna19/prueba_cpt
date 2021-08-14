@@ -1,5 +1,5 @@
 import csv
-
+import os
 
 PROCESING_TIME = 7
 TYPE = 5
@@ -85,18 +85,18 @@ def menu() -> int:
     #POST:Retornarmos como entero la decision del usuario.
 
     decision = None
-    procedimientos = ["Cambiar un PT para todos los CPT", 
-                    "Cambiar el PT para un CPT o Varios en particular", "Cambiar horarios de CPT"]
+    procedimientos = ["CAMBIAR UN PT PARA TODOS LOS CPTS", 
+                    "CAMBIAR EL PT PARA UN CPT O VARIOS EN PARTICULAR", "CAMBIAR HORARIOS DE CPT"]
 
     for opcion in range(len(procedimientos)):
         print(f"{opcion+1}){procedimientos[opcion]}")
 
     try:
-        decision_a_validar = int(input("Introduce por favor la decision deseada "))
+        decision_a_validar = int(input("\nINTRODUCE LA OPCION DESEADA "))
         decision = validando_decision(decision_a_validar)
 
     except ValueError:
-        print("Estas introduciendo un tipo de valor no numerico, marque 1 para reintentar nuevamente. ")
+        print("ESTAS INTRODUCIENDO UN TIPO DE VALOR NO NUMERICO, MARQUE 1 PARA REINTENTAR.")
 
     return decision
 
@@ -174,19 +174,22 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
                         canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
         agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
-        decision_cambiar_pt_a_etd = int(input("Marca 1 si deseas cambiar el pt a los etds o 2 para salir "))
+        decision_cambiar_pt_a_etd = int(input("MARCA 1 SI DESEAS CAMBIAR EL PT A LOS ETDS O 2 SI NO LO DESEA ASI "))
         if decision_cambiar_pt_a_etd == 1:
             cambiar_pt_a_etd(impacto_pt_final)
 
         canalizaciones_pt_actualizados.clear()
-        seguir = int(input("1 para continuar cambiando PT a otros cpts, 2 para salir "))
+        seguir = int(input("1 PARA CONTINUAR CAMBIANDO PT A OTROS CPTS O 2 PARA FINALIZAR TODOS LOS CAMBIOS  "))
 
         if seguir == 1:
             print("Sigamos")
         else:
             decision = True
             escribiendo_archivo_modificado(impacto_pt_final)
-  
+
+        os.system('cls')
+        print("Cambio realizado!")
+
 
 def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, impacto_pt_final:list) ->list:
 
@@ -227,7 +230,7 @@ def main():
         continuar_decision = int(input("\nMarque 1 si quiere hacer mas cambios o 2 para salir "))
 
         if continuar_decision == 1:
-            print("\nSigamos")#deberia ir la funcion de limpiar pantalla
+            os.system("cls")
         else:
             continuar = True
 

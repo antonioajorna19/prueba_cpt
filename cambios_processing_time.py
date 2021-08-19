@@ -61,6 +61,9 @@ def cambiando_pt(lineas_archivo_csv:list, ptime:str) ->None:
     #PRE:Se recibe la lista de las lineas a modificar y el valor a setear.
     #POST:Al ser un procedimiento se retorna un None.
 
+    canalizaciones_afectadas = list()
+    impacto_final = list()
+
     opciones = ["cpt","etd","cpt y etd"]
     print("DESEAS CAMBIAR TODOS LOS PROCESSING TIMES DE TODOS LOS:")
 
@@ -69,14 +72,27 @@ def cambiando_pt(lineas_archivo_csv:list, ptime:str) ->None:
     
     valor = int(input("Marque el numero de la opcion deseada "))-1
     
-    if valor == 0 or valor == 1:
+    if valor == 0:
         for id_linea in range(len(lineas_archivo_csv)):
             if lineas_archivo_csv[id_linea][TYPE] == opciones[valor]:
                 lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+        escribiendo_archivo_modificado(lineas_archivo_csv)
+    
+    elif valor == 1:
+        for id_linea in range(len(lineas_archivo_csv)):
+            if lineas_archivo_csv[id_linea][TYPE] == opciones[valor]:
+                lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+                if lineas_archivo_csv[id_linea][FROM_CANALIZACION_SERVICEID] not in canalizaciones_afectadas:
+                    canalizaciones_afectadas.append(lineas_archivo_csv[id_linea][FROM_CANALIZACION_SERVICEID])
+        agregando_etds(lineas_archivo_csv,canalizaciones_afectadas,impacto_final)
+        escribiendo_archivo_modificado(impacto_final)
+
+
     else:
         for id_linea in range(len(lineas_archivo_csv)):
             if lineas_archivo_csv[id_linea][TYPE] == opciones[0] or lineas_archivo_csv[id_linea][TYPE] == opciones[1]:
                 lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+        escribiendo_archivo_modificado(lineas_archivo_csv)
 
     print("Cambio realizado!")
 
@@ -236,7 +252,7 @@ def main() ->None:
         if decision == 1:
             pt = input("A cuanto deseas cambiar el Processing time?. ej: 0800 ")
             cambiando_pt(lineas_archivo_csv, pt)
-            escribiendo_archivo_modificado(lineas_archivo_csv)
+            #escribiendo_archivo_modificado(lineas_archivo_csv)
                 
         elif decision ==2:
             cambiar_pt_cpts_particulares(lineas_archivo_csv)

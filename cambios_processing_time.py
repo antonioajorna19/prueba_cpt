@@ -1,6 +1,7 @@
 import csv
 import os
 
+
 PROCESING_TIME = 7
 TYPE = 5
 CPT = 6
@@ -16,16 +17,19 @@ def extraer_lineas_archivo() ->list:
     #POST: Retornamos una lista de lista que cada indice es cada linea del archivo .csv.
     
     lineas_archivo_csv = list()
-    nombre_archivo = input("Por favor indica el nombre del archivo .csv descargado sin su extension ")+".csv"
 
-    try:
-        with open(nombre_archivo, "r") as archivo_csv:
-            leyendo_archivo = csv.reader(archivo_csv, delimiter=",")
-            for linea in leyendo_archivo:
-                lineas_archivo_csv.append(linea)
-    
-    except FileNotFoundError:
-        print("El archivo descrito no existe en esta ruta, marque 1 para volver a intentar")
+    archivo_encontrado = False
+    while not archivo_encontrado:
+        nombre_archivo = input("Por favor indica el nombre del archivo .csv descargado sin su extension ")+".csv"
+
+        try:
+            with open(nombre_archivo, "r") as archivo_csv:
+                leyendo_archivo = csv.reader(archivo_csv, delimiter=",")
+                for linea in leyendo_archivo:
+                    lineas_archivo_csv.append(linea)
+            archivo_encontrado = True
+        except FileNotFoundError:
+            print("El archivo descrito no existe en esta ruta, indique nuevamente el nombre del archivo")
     
     return lineas_archivo_csv
 
@@ -46,7 +50,7 @@ def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
     #PRE:Recibimos las lineas del archivo modificadas como listas de listas.
     #POST:Se retorna un None debido al ser un procedimiento.
 
-    with open("Archivo_modificado.tsv", "a", newline='') as archivo_nuevo:
+    with open("Archivo_modificado.tsv", "w", newline='') as archivo_nuevo:
         escribir = csv.writer(archivo_nuevo, delimiter="\t")
         for key,warehouse,canalizacion,servicio,dia,tipo,hora,pt,tt in lineas_archivo_csv_modificado:
             escribir.writerow((key,warehouse,canalizacion,servicio,dia,tipo,hora,pt,tt))
@@ -57,11 +61,24 @@ def cambiando_pt(lineas_archivo_csv:list, ptime:str) -> None:
     #PRE:Se recibe la lista de las lineas a modificar y el valor a setear.
     #POST:Al ser un procedimiento se retorna un None.
 
-    for id_linea in range(len(lineas_archivo_csv)):
-        if lineas_archivo_csv[id_linea][TYPE] == "cpt":
-            lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+    opciones = ["cpt","etd","cpt y etd"]
+    print("DESEAS CAMBIAR TODOS LOS PROCESSING TIMES DE TODOS LOS:")
 
-    print("Cambio realizado")
+    for opcion in  range(len(opciones)):
+        print(f"{opcion+1}){opciones[opcion]}")
+    
+    valor = int(input("Marque el numero de la opcion deseada "))-1
+    
+    if valor == 0 or valor == 1:
+        for id_linea in range(len(lineas_archivo_csv)):
+            if lineas_archivo_csv[id_linea][TYPE] == opciones[valor]:
+                lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+    else:
+        for id_linea in range(len(lineas_archivo_csv)):
+            if lineas_archivo_csv[id_linea][TYPE] == opciones[0] or lineas_archivo_csv[id_linea][TYPE] == opciones[1]:
+                lineas_archivo_csv[id_linea][PROCESING_TIME] = ptime
+
+    print("Cambio realizado!")
 
 
 def validando_decision(decision:int) ->int:
@@ -140,10 +157,10 @@ def cambiar_pt_a_etd(impacto_pt_final:list)->None:
     print("Cambio agregado!")
 
 
-def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
+def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->None:
 
     #PRE: Se reciben las lineas del archivo.csv a modificar.
-    #POST: Se retorna en una lista el from_canalizacion_serviceid de los cpts afectados por el cambio de PT.
+    #POST: Al ser un procedimiento retorna un tipo de valor None.
 
     impacto_pt_final = list()
     canalizaciones_pt_actualizados = list()
@@ -153,8 +170,9 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->list:
         cpt_actual = input("Introduce el cpt al que quieres cambiar el PT. ej: 0200 ")
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
         cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
+
         if cambiar_dias_en_particular == 1:
-            dia_en_particular = input("Escribe los dias en particular que deseas cambiar separados por espacios. ej:monday wednesday ")
+            dia_en_particular = input("Escribe los dias en particular que deseas cambiar separados por espacios. ej: monday wednesday ")
             dias_a_modificar = dia_en_particular.split()
 
         while len(pt_time_nuevo) != 4 :
@@ -213,24 +231,24 @@ def main():
             lineas_archivo_csv = extraer_lineas_archivo()
             validando_campos_de_lineas(lineas_archivo_csv)
 
-            if len(lineas_archivo_csv) != 0:
-
-                if decision == 1:
-                    pt = input("A cuanto deseas cambiar el Processing time?. ej: 0800 ")
-                    cambiando_pt(lineas_archivo_csv, pt)
-                    escribiendo_archivo_modificado(lineas_archivo_csv)
+            if decision == 1:
+                pt = input("A cuanto deseas cambiar el Processing time?. ej: 0800 ")
+                cambiando_pt(lineas_archivo_csv, pt)
+                escribiendo_archivo_modificado(lineas_archivo_csv)
                 
-                elif decision ==2:
-                    cambiar_pt_cpts_particulares(lineas_archivo_csv)
+            elif decision ==2:
+                cambiar_pt_cpts_particulares(lineas_archivo_csv)
 
-                else:
-                    cambiar_horarios_cpts(lineas_archivo_csv)
-                    escribiendo_archivo_modificado(lineas_archivo_csv)
+            else:
+                cambiar_horarios_cpts(lineas_archivo_csv)
+                escribiendo_archivo_modificado(lineas_archivo_csv)
 
-        continuar_decision = int(input("\nMarque 1 si quiere hacer mas cambios o 2 para salir "))
+        continuar_decision = int(input("\nMarque 1 si quieres corregir algun cambio o 2 para finalizar "))
 
         if continuar_decision == 1:
+            continuar = False
             os.system("cls")
+
         else:
             continuar = True
 
@@ -238,3 +256,5 @@ def main():
 
 
 main()
+#ver las funciones: opcion 1 del menu, como agregar solo las canalizaciones que tienen etd solamente o los cpts
+#ver las funciones de agregar_etds, cambio_de_processing_time para distintos cpts, cambiando etds.

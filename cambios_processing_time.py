@@ -274,5 +274,5 @@ def main() ->None:
 
 
 main()
-#ver las funciones: opcion 1 del menu, como agregar solo las canalizaciones que tienen etd solamente con sus cpts correspondientes.
+
 #ver como cambiar los pt de los etds de algunos valores en particular.

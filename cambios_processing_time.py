@@ -152,7 +152,7 @@ def cambiar_horarios_cpts(lineas_archivos_csv:list) ->None:
 
 def cambiar_pt_a_etd(impacto_pt_final:list) ->None:
 
-    #PRE:Recibimos la kista con las canalizaciones a impactar.
+    #PRE:Recibimos la lista con las canalizaciones a impactar.
     #POST:Al ser un procedimiento, se retorna un valor de tipo None.
 
     valor_etd = input("Introduce por favor el el valor del etd a cambiar el valor. Ej: 0800 ")
@@ -187,7 +187,7 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->None:
     while not decision:
         cpt_actual = input("Introduce el cpt al que quieres cambiar el PT. ej: 0200 ")
         pt_time_nuevo = input("Introduce el PT deseado. Ej: 0800 ")
-        cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 sino lo desea asi "))
+        cambiar_dias_en_particular = int(input("Marque 1 si desea cambiarlo para un dia en particular o 2 si cambiaras para todos los dias "))
 
         if cambiar_dias_en_particular == 1:
             dia_en_particular = input("Escribe los dias en particular que deseas cambiar separados por espacios. ej: monday wednesday ")
@@ -210,9 +210,10 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->None:
                             canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
         agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
-        decision_cambiar_pt_a_etd = int(input("MARCA 1 SI DESEAS CAMBIAR EL PT A LOS ETDS O 2 SI NO LO DESEA ASI "))
-        if decision_cambiar_pt_a_etd == 1:
-            cambiar_pt_a_etd(impacto_pt_final)
+
+        #decision_cambiar_pt_a_etd = int(input("MARCA 1 SI DESEAS CAMBIAR EL PT A LOS ETDS O 2 SI NO LO DESEA ASI "))
+        #if decision_cambiar_pt_a_etd == 1:
+         #   cambiar_pt_a_etd(impacto_pt_final)
 
         canalizaciones_pt_actualizados.clear()
         seguir = int(input("1 PARA CONTINUAR CAMBIANDO PT A OTROS CPTS O 2 PARA FINALIZAR TODOS LOS CAMBIOS  "))

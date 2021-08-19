@@ -45,7 +45,7 @@ def validando_campos_de_lineas(lineas_archiv_csv:list) ->None:
             lineas_archiv_csv[id_linea].pop(POSICION_DE_SOBRA)
 
 
-def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
+def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) ->None:
 
     #PRE:Recibimos las lineas del archivo modificadas como listas de listas.
     #POST:Se retorna un None debido al ser un procedimiento.
@@ -56,7 +56,7 @@ def escribiendo_archivo_modificado(lineas_archivo_csv_modificado:list) -> None:
             escribir.writerow((key,warehouse,canalizacion,servicio,dia,tipo,hora,pt,tt))
 
 
-def cambiando_pt(lineas_archivo_csv:list, ptime:str) -> None:
+def cambiando_pt(lineas_archivo_csv:list, ptime:str) ->None:
 
     #PRE:Se recibe la lista de las lineas a modificar y el valor a setear.
     #POST:Al ser un procedimiento se retorna un None.
@@ -96,29 +96,31 @@ def validando_decision(decision:int) ->int:
     return decision
 
 
-def menu() -> int:
+def menu() ->int:
 
     #PRE:No recibimos ningun argumento.
     #POST:Retornarmos como entero la decision del usuario.
 
-    decision = None
     procedimientos = ["CAMBIAR UN PT PARA TODOS LOS CPTS", 
                     "CAMBIAR EL PT PARA UN CPT O VARIOS EN PARTICULAR", "CAMBIAR HORARIOS DE CPT"]
 
     for opcion in range(len(procedimientos)):
         print(f"{opcion+1}){procedimientos[opcion]}")
 
-    try:
-        decision_a_validar = int(input("\nINTRODUCE LA OPCION DESEADA "))
-        decision = validando_decision(decision_a_validar)
+    error_decision = False
+    while not error_decision:
 
-    except ValueError:
-        print("ESTAS INTRODUCIENDO UN TIPO DE VALOR NO NUMERICO, MARQUE 1 PARA REINTENTAR.")
+        try:
+            decision_a_validar = int(input("\nINTRODUCE LA OPCION DESEADA "))
+            decision = validando_decision(decision_a_validar)
+            error_decision = True
+        except ValueError:
+            print("ESTAS INTRODUCIENDO UN TIPO DE VALOR NO NUMERICO, MARQUE 1 PARA REINTENTAR.")
 
     return decision
 
 
-def cambiar_horarios_cpts(lineas_archivos_csv:list) -> None:
+def cambiar_horarios_cpts(lineas_archivos_csv:list) ->None:
 
     #PRE:Recibimos las lineas del archivo .csv a cambiar su cpt.
     #POST:Se retorna un None al ser un procedimiento.
@@ -132,7 +134,7 @@ def cambiar_horarios_cpts(lineas_archivos_csv:list) -> None:
             lineas_archivos_csv[id_linea][CPT] = cpt_modificado
 
 
-def cambiar_pt_a_etd(impacto_pt_final:list)->None:
+def cambiar_pt_a_etd(impacto_pt_final:list) ->None:
 
     #PRE:Recibimos la kista con las canalizaciones a impactar.
     #POST:Al ser un procedimiento, se retorna un valor de tipo None.
@@ -183,13 +185,13 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->None:
                 for dia in dias_a_modificar:
                     if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual and lineas_archivos_csv[id_linea][DAY] == dia:
                         lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
-                        if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
+                        if lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID] not in canalizaciones_pt_actualizados:
                             canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
             else:
                 if lineas_archivos_csv[id_linea][TYPE] == "cpt" and lineas_archivos_csv[id_linea][CPT] == cpt_actual:
                     lineas_archivos_csv[id_linea][PROCESING_TIME] = pt_time_nuevo
-                    if canalizaciones_pt_actualizados.count(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID]) < 1:
-                        canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
+                    if lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID] not in canalizaciones_pt_actualizados:
+                            canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
         agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
         decision_cambiar_pt_a_etd = int(input("MARCA 1 SI DESEAS CAMBIAR EL PT A LOS ETDS O 2 SI NO LO DESEA ASI "))
@@ -220,28 +222,28 @@ def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, impa
                 impacto_pt_final.append(lineas_archivos_csv[id_de_linea])
 
 
-def main():
+def main() ->None:
 
      
     continuar = False
     while not continuar:
 
         decision = menu()
-        if decision != None:
-            lineas_archivo_csv = extraer_lineas_archivo()
-            validando_campos_de_lineas(lineas_archivo_csv)
+        
+        lineas_archivo_csv = extraer_lineas_archivo()
+        validando_campos_de_lineas(lineas_archivo_csv)
 
-            if decision == 1:
-                pt = input("A cuanto deseas cambiar el Processing time?. ej: 0800 ")
-                cambiando_pt(lineas_archivo_csv, pt)
-                escribiendo_archivo_modificado(lineas_archivo_csv)
+        if decision == 1:
+            pt = input("A cuanto deseas cambiar el Processing time?. ej: 0800 ")
+            cambiando_pt(lineas_archivo_csv, pt)
+            escribiendo_archivo_modificado(lineas_archivo_csv)
                 
-            elif decision ==2:
-                cambiar_pt_cpts_particulares(lineas_archivo_csv)
+        elif decision ==2:
+            cambiar_pt_cpts_particulares(lineas_archivo_csv)
 
-            else:
-                cambiar_horarios_cpts(lineas_archivo_csv)
-                escribiendo_archivo_modificado(lineas_archivo_csv)
+        else:
+            cambiar_horarios_cpts(lineas_archivo_csv)
+            escribiendo_archivo_modificado(lineas_archivo_csv)
 
         continuar_decision = int(input("\nMarque 1 si quieres corregir algun cambio o 2 para finalizar "))
 
@@ -256,5 +258,5 @@ def main():
 
 
 main()
-#ver las funciones: opcion 1 del menu, como agregar solo las canalizaciones que tienen etd solamente o los cpts
-#ver las funciones de agregar_etds, cambio_de_processing_time para distintos cpts, cambiando etds.
+#ver las funciones: opcion 1 del menu, como agregar solo las canalizaciones que tienen etd solamente con sus cpts correspondientes.
+#ver como cambiar los pt de los etds de algunos valores en particular.

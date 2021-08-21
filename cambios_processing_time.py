@@ -209,23 +209,22 @@ def cambiar_pt_cpts_particulares(lineas_archivos_csv:list) ->None:
                     if lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID] not in canalizaciones_pt_actualizados:
                             canalizaciones_pt_actualizados.append(lineas_archivos_csv[id_linea][FROM_CANALIZACION_SERVICEID])
 
-        agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
-
         #decision_cambiar_pt_a_etd = int(input("MARCA 1 SI DESEAS CAMBIAR EL PT A LOS ETDS O 2 SI NO LO DESEA ASI "))
         #if decision_cambiar_pt_a_etd == 1:
          #   cambiar_pt_a_etd(impacto_pt_final)
 
-        canalizaciones_pt_actualizados.clear()
-        seguir = int(input("1 PARA CONTINUAR CAMBIANDO PT A OTROS CPTS O 2 PARA FINALIZAR TODOS LOS CAMBIOS  "))
+        seguir = int(input("MARQUE 1 PARA CONTINUAR CAMBIANDO PT A OTROS CPTS O 2 PARA FINALIZAR TODOS LOS CAMBIOS  "))
 
         if seguir == 1:
             print("Sigamos")
         else:
             decision = True
+            agregando_etds(lineas_archivos_csv, canalizaciones_pt_actualizados, impacto_pt_final)
             escribiendo_archivo_modificado(impacto_pt_final)
+            canalizaciones_pt_actualizados.clear()
+            print("CAMBIO REALIZADO!")
 
         os.system('cls')
-        print("Cambio realizado!")
 
 
 def agregando_etds(lineas_archivos_csv:list, canalizaciones_afectadas:list, impacto_pt_final:list) ->list:
@@ -275,5 +274,3 @@ def main() ->None:
 
 
 main()
-
-#ver como cambiar los pt de los etds de algunos valores en particular.
